@@ -2,7 +2,7 @@
 
 clear
 
-. /home/alexis/demo-magic.sh
+. ../demo-magic.sh
 
 pe "# Creation d'un ns"
 pe "kubectl create ns vault"
