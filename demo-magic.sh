@@ -40,9 +40,9 @@ COLOR_RESET="\033[0m"
 C_NUM=0
 
 # prompt and command color which can be overriden
-DEMO_PROMPT="$ "
+DEMO_PROMPT="➜ ~ "
 DEMO_CMD_COLOR=$BOLD
-DEMO_COMMENT_COLOR=$GREY
+DEMO_COMMENT_COLOR=$PURPLE
 
 ##
 # prints the script usage
