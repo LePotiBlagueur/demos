@@ -178,7 +178,7 @@ pe "kubectl create sa operator-auth -n myapp"
 
 echo ""
 
-pe "# On créé notre déploiment"
+pe "# On créé notre déploiement"
 echo "kubectl apply -f -n myapp - <<EOF
 apiVersion: apps/v1
 kind: Deployment
