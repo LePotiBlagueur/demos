@@ -1,0 +1,25 @@
+apiVersion: kyverno.io/v2
+kind: PolicyException
+metadata:
+  name: exception-require-run-as-nonroot
+  namespace: kyverno
+spec:
+  conditions:
+    any:
+    - key: '{{ request.object.metadata.annotations."deezer.com/exception-require-run-as-nonroot"
+        || '''' }}'
+      operator: Equals
+      value: skip
+  exceptions:
+  - policyName: require-run-as-nonroot
+    ruleNames:
+    - run-as-non-root
+    - autogen-run-as-non-root
+    - autogen-cronjob-run-as-non-root
+  match:
+    any:
+    - resources:
+        kinds:
+        - Pod
+        - Deployment
+        - CronJob
