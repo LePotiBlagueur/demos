@@ -88,7 +88,7 @@ kubectl apply -f manifests/mutating-rule-policy.yaml
 echo ""
 
 pe "# On check l'imagePullPolicy du pod"
-pe "kubectl get pod -n default kyverno-root-demo -o yaml | grep imagePullPolicy"
+pe "kubectl get pod/kyverno-root-demo -n default -o jsonpath='{.spec.containers[*].imagePullPolicy}'"
 
 echo ""
 
@@ -97,7 +97,7 @@ pe "kubectl --namespace default get pod kyverno-root-demo -o yaml | kubectl repl
 
 echo ""
 
-pe "# On Re-check l'imagePullPolicy du pod"
-pe "kubectl get pod -n default kyverno-root-demo -o yaml | grep imagePullPolicy"
+pe "# On re-check l'imagePullPolicy du pod"
+pe "kubectl get pod/kyverno-root-demo -n default -o jsonpath='{.spec.containers[*].imagePullPolicy}'"
 
 wait
