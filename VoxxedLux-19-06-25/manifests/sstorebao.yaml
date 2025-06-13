@@ -1,0 +1,17 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: demo-store
+  namespace: myapp
+spec:
+  provider:
+    vault:
+      server: "http://openbao.bao.svc.cluster.local:8200"
+      path: "kvv2"
+      version: "v2"
+      auth:
+        kubernetes:
+          mountPath: "external-secrets-operator"
+          role: "default"
+          serviceAccountRef:
+            name: myapp
