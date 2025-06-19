@@ -1,10 +1,12 @@
-#!/bin/bash -i
+#!/bin/bash
 
 clear
 
+# helm install vault openbao/openbao -n vault --set 'server.dev.enabled=true' --set 'ui.enabled=true' --create-namespace --set 'fullnameOverride=vault'
+
 . ../demo-magic.sh
-. ~/.bashrc
-pe "# Creation d'un ns pour l'external-secrets"
+# . ~/.bashrc
+pe "# Creation d'un ns pour l'ESO"
 pe "kubectl create ns external-secrets"
 pei "kubens external-secrets"
 
@@ -46,21 +48,20 @@ export KUBE_HOST=$(kubectl config view --raw --minify --flatten --output='jsonpa
 
 echo ""
 
-pe "# Déploiement d'OpenBao"
-pei "helm repo add openbao https://openbao.github.io/openbao-helm"
-pei "helm repo update"
-pe "helm install openbao openbao/openbao -n bao --set 'server.dev.enabled=true' --create-namespace"
+# pe "# Déploiement d'OpenBao"
+# pei "helm repo add openbao https://openbao.github.io/openbao-helm"
+# pei "helm repo update"
+# pe "helm install openbao openbao/openbao -n bao --set 'server.dev.enabled=true' --create-namespace"
 
-echo ""
+# echo ""
 
 pe "# On expose le port 8200"
-pei "kubens bao"
-pe "kubectl port-forward pod/openbao-0 8200 2>&1 > /dev/null &"
+# pei "kubens bao"
+pe "kubectl port-forward -n vault pod/vault-0 8200 2>&1 > /dev/null &"
 
 echo ""
-
-pei "# Pour le fun"
-p "alias vault='bao'"
+# pei "# Pour le fun"
+# p "alias vault='bao'"
 pe "vault --version"
 
 pe "# On exporte nos variables VAULT_ADDR et VAULT_TOKEN"
@@ -69,7 +70,7 @@ pe "export VAULT_TOKEN='root'"
 
 echo ""
 
-pei "### Dans OpenBao ###"
+pei "### Dans Vault ###"
 pe "# On créé le Secret Engine"
 pe "vault secrets enable -path=kvv2 kv-v2"
 
@@ -126,7 +127,7 @@ metadata:
 spec:
   provider:
     vault:
-      server: "http://openbao.bao.svc.cluster.local:8200"
+      server: "http://vault.vault.svc.cluster.local:8200"
       path: "kvv2"
       version: "v2"
       auth:
@@ -140,7 +141,7 @@ kubectl apply -f manifests/sstorebao.yaml -n myapp
 
 echo ""
 
-pe "# On créé un secret à pusher sur OpenBao"
+pe "# On créé un secret à pusher sur Vault"
 p 'kubectl apply -f -n myapp - <<EOF
 apiVersion: v1
 kind: Secret
@@ -182,7 +183,7 @@ kubectl apply -f manifests/pushsecret.yaml -n myapp
 
 echo ""
 
-pe "# On vérifie que le secret a été créé dans OpenBao"
+pe "# On vérifie que le secret a été créé dans Vault"
 pe "vault kv get kvv2/demo/myapp/config"
 
 echo ""
@@ -259,7 +260,7 @@ echo ""
 pe "# On annote notre déploiement pour le reloader"
 p 'kubectl annotate deployment myapp -n myapp secret.reloader.stakater.com/reload: "my-super-secret"'
 
-pe "# On change le secret dans OpenBao"
+pe "# On change le secret dans Vault"
 p 'kubectl apply -f -n myapp - <<EOF
 apiVersion: v1
 kind: Secret
